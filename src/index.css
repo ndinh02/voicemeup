@@ -1,0 +1,56 @@
+@import "tailwindcss";
+
+@theme {
+  /* Fixed app shell width so the whole page — not just the ticket card —
+     renders pixel-identically on mobile and on wide/desktop viewports,
+     instead of stretching to fill a wider column. */
+  --container-app: 420px;
+
+  --font-display: "Fraunces", "Georgia", serif;
+  --font-mono: "Space Mono", ui-monospace, monospace;
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+
+  --color-ticket-pink: #f7c9cb;
+  --color-ticket-pink-ink: #2a1214;
+  --color-ticket-green: #a9cba4;
+  --color-ticket-green-ink: #16241a;
+  --color-ticket-blue: #cdeef4;
+  --color-ticket-blue-ink: #12282b;
+  --color-ticket-yellow: #f6ce86;
+  --color-ticket-yellow-ink: #2a1d06;
+  --color-ticket-gray: #ebebeb;
+  --color-ticket-gray-ink: #1c1c1a;
+
+  --color-ink: #17130f;
+  --color-paper: #fdfaf5;
+}
+
+html {
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  margin: 0;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  overscroll-behavior-y: none;
+}
+
+button {
+  cursor: pointer;
+  font-family: inherit;
+}
+
+input {
+  font-family: inherit;
+}
+
+@keyframes rec-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+
+.animate-rec-pulse {
+  animation: rec-pulse 1.1s ease-in-out infinite;
+}
