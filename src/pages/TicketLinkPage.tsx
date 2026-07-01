@@ -3,16 +3,17 @@ import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import PrimaryButton from "../components/PrimaryButton";
 import TicketStack from "../components/TicketStack";
-import { useTicketFromHash } from "../lib/useTicketFromHash";
+import { useTicket } from "../lib/useTicket";
 
 interface Props {
   mode: "share" | "view";
 }
 
 export default function TicketLinkPage({ mode }: Props) {
-  const { data, error } = useTicketFromHash();
+  const { data, error, loading } = useTicket();
   const navigate = useNavigate();
   const [sent, setSent] = useState(false);
+  const [sharing, setSharing] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
 
   if (error) {
@@ -27,6 +28,17 @@ export default function TicketLinkPage({ mode }: Props) {
     );
   }
 
+  if (loading) {
+    return (
+      <div className="mx-auto flex min-h-screen max-w-app flex-col">
+        <Header />
+        <main className="flex flex-1 flex-col items-center justify-center px-6 text-center">
+          <p className="font-sans text-lg text-ink/50">loading your voiceme…</p>
+        </main>
+      </div>
+    );
+  }
+
   if (!data) return null;
 
   const { bundle, audioBuffers } = data;
@@ -36,10 +48,34 @@ export default function TicketLinkPage({ mode }: Props) {
   });
   const displayName = bundle.name || "your name";
 
-  const getShareUrl = () => `${window.location.origin}/t#${window.location.hash.slice(1)}`;
+  const getLongShareUrl = () => `${window.location.origin}/t#${window.location.hash.slice(1)}`;
+
+  /**
+   * Prefer a short server-backed link (/t/:id) so the recipient doesn't have
+   * to open a URL with an entire audio clip base64-encoded into it. If the
+   * API call fails for any reason (offline, storage not configured, etc.)
+   * fall back to the original self-contained link so sharing still works.
+   */
+  const getShareUrl = async () => {
+    try {
+      const encoded = window.location.hash.slice(1);
+      const res = await fetch("/api/tickets", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ data: encoded }),
+      });
+      if (!res.ok) throw new Error("upload failed");
+      const { id } = (await res.json()) as { id: string };
+      return `${window.location.origin}/t/${id}`;
+    } catch {
+      return getLongShareUrl();
+    }
+  };
 
   const handleShare = async () => {
-    const url = getShareUrl();
+    setSharing(true);
+    const url = await getShareUrl();
+    setSharing(false);
     if (navigator.share) {
       try {
         await navigator.share({ title: "voicemeup", text: "You have a new voiceme!", url });
@@ -75,7 +111,7 @@ export default function TicketLinkPage({ mode }: Props) {
     primaryLabel = "create new voiceme";
     primaryAction = handleCreateNew;
   } else {
-    primaryLabel = "send this as a link";
+    primaryLabel = sharing ? "preparing link…" : "send this as a link";
     primaryAction = handleShare;
   }
 
@@ -108,7 +144,7 @@ export default function TicketLinkPage({ mode }: Props) {
           {mode === "share" && sent && (
             <p className="font-mono text-xs text-ink/50">✓ link copied — ready to send</p>
           )}
-          <PrimaryButton onClick={primaryAction}>{primaryLabel}</PrimaryButton>
+          <PrimaryButton onClick={primaryAction} disabled={sharing}>{primaryLabel}</PrimaryButton>
           {mode === "share" && !sent && (
             <PrimaryButton variant="outline" onClick={handleBack}>
               ‹ back, change something

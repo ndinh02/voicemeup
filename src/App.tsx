@@ -12,6 +12,7 @@ function App() {
         <Route path="/create" element={<Create />} />
         <Route path="/share" element={<Share />} />
         <Route path="/t" element={<View />} />
+        <Route path="/t/:id" element={<View />} />
       </Routes>
     </BrowserRouter>
   );
