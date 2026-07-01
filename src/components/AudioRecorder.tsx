@@ -44,15 +44,20 @@ export default function AudioRecorder({ value, onChange }: Props) {
     streamRef.current = null;
   };
 
-  useEffect(
-    () => () => {
+  useEffect(() => {
+    // Explicitly reset on mount (not just the useRef initializer) because
+    // React StrictMode double-invokes effects in development: mount →
+    // cleanup → mount again, without a real unmount in between. Without
+    // this line the synthetic cleanup would permanently leave the flag
+    // false, silently breaking every recording after the first render.
+    isMountedRef.current = true;
+    return () => {
       isMountedRef.current = false;
       stopTimer();
       stopStream();
       if (objectUrlRef.current) URL.revokeObjectURL(objectUrlRef.current);
-    },
-    [],
-  );
+    };
+  }, []);
 
   const finishRecording = useCallback(async () => {
     // Guards against a card being switched (unmounting this recorder) while
@@ -83,7 +88,12 @@ export default function AudioRecorder({ value, onChange }: Props) {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       streamRef.current = stream;
       const mimeType = getSupportedMimeType();
-      const recorder = mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream);
+      // Opus stays clear for speech well below its general-purpose default
+      // (often ~128kbps) — since the whole recording rides in the URL,
+      // keeping bitrate low is what keeps links short and fast to open.
+      const recorderOptions: MediaRecorderOptions = { audioBitsPerSecond: 24_000 };
+      if (mimeType) recorderOptions.mimeType = mimeType;
+      const recorder = new MediaRecorder(stream, recorderOptions);
       mediaRecorderRef.current = recorder;
       chunksRef.current = [];
       recorder.ondataavailable = (e) => {
