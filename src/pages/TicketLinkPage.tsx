@@ -69,7 +69,7 @@ export default function TicketLinkPage({ mode }: Props) {
   let primaryLabel: string;
   let primaryAction: () => void;
   if (mode === "view") {
-    primaryLabel = "get this as a link";
+    primaryLabel = "create a reply voiceme";
     primaryAction = handleCreateNew;
   } else if (sent) {
     primaryLabel = "create new voiceme";
