@@ -35,14 +35,21 @@ export function useTicket(): { data: Decoded | null; error: string | null; loadi
       fetch(`/api/tickets/${id}`)
         .then(async (res) => {
           if (!res.ok) {
-            throw new Error(res.status === 404 ? "This voiceme has expired or the link is invalid." : "Couldn't load this voiceme.");
+            setError(res.status === 404 ? "This voiceme has expired or the link is invalid." : "Couldn't load this voiceme.");
+            return;
           }
-          const { data: encoded } = (await res.json()) as { data: string };
-          setData(decodeTicket(encoded));
+          // Never surface a raw parse/decode error message here — it could be
+          // an engine-specific native exception (seen in the wild: WebKit's
+          // wording for a JSON.parse failure reads like a cryptic pattern-match
+          // error) rather than anything meaningful to whoever opened the link.
+          try {
+            const { data: encoded } = (await res.json()) as { data: string };
+            setData(decodeTicket(encoded));
+          } catch {
+            setError("Couldn't load this voiceme.");
+          }
         })
-        .catch((err: unknown) => {
-          setError(err instanceof Error ? err.message : "Couldn't load this voiceme.");
-        })
+        .catch(() => setError("Couldn't load this voiceme."))
         .finally(() => setLoading(false));
       return;
     }
