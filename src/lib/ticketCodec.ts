@@ -1,6 +1,6 @@
 import { deflate, inflate } from "pako";
 import { bytesToBase64Url, base64UrlToBytes } from "./base64url";
-import { PHOTO_FILTERS, TICKET_COLORS, type DrawPath, type PhotoFilter, type TicketBundle, type TicketColor, type TicketItem } from "./types";
+import { TICKET_COLORS, type DrawPath, type TicketBundle, type TicketColor, type TicketItem } from "./types";
 
 interface ItemWithLengths extends TicketItem {
   audioLength: number;
@@ -173,7 +173,6 @@ function sanitizeItem(raw: unknown): TicketItem | null {
   const peaks = Array.isArray(r.peaks)
     ? r.peaks.slice(0, MAX_PEAKS).map((n) => clampInt(n, 0, 0, 100))
     : [];
-  const photoFilter: PhotoFilter = PHOTO_FILTERS.includes(r.photoFilter as PhotoFilter) ? (r.photoFilter as PhotoFilter) : "none";
 
   return {
     id: sanitizeString(r.id, 20) || "00000",
@@ -183,7 +182,6 @@ function sanitizeItem(raw: unknown): TicketItem | null {
     duration: clampInt(r.duration, 0, 0, 120),
     peaks,
     photoType: sanitizeString(r.photoType, MAX_STRING_LENGTH),
-    photoFilter,
   };
 }
 

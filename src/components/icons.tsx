@@ -13,12 +13,13 @@ export function FlowerCorner({ className }: { className?: string }) {
   );
 }
 
-/** A small binder-clip shape, meant to overlap the top edge of a pinned-on photo. */
-export function ClipIcon({ className }: { className?: string }) {
+/** A wire "gem clip" paperclip — two nested rounded-rect loops, drawn vertically so a diagonal rotation at the usage site makes it look like it's slid onto a corner. */
+export function PaperclipIcon({ className }: { className?: string }) {
   return (
-    <svg viewBox="0 0 40 26" className={className} aria-hidden="true">
-      <rect x="4" y="0" width="32" height="14" rx="7" fill="currentColor" />
-      <rect x="15" y="8" width="10" height="18" rx="4" fill="none" stroke="currentColor" strokeWidth="3" />
+    <svg viewBox="0 0 24 62" className={className} aria-hidden="true">
+      <rect x="3.5" y="3" width="13" height="56" rx="6.5" fill="none" stroke="#8f9296" strokeWidth="2.4" />
+      <rect x="3.5" y="3" width="13" height="32" rx="6.5" fill="none" stroke="#8f9296" strokeWidth="2.4" />
+      <rect x="3.5" y="3" width="13" height="56" rx="6.5" fill="none" stroke="#ffffff" strokeOpacity="0.55" strokeWidth="0.9" />
     </svg>
   );
 }

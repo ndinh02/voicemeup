@@ -46,10 +46,3 @@ export function captureSquarePhoto(video: HTMLVideoElement, facing: CameraFacing
     );
   });
 }
-
-/** CSS filter string for each photo filter option, shared by the create-flow preview and the final ticket render. */
-export function photoFilterCss(filter: "none" | "bw" | "blur"): string {
-  if (filter === "bw") return "grayscale(1) contrast(1.05)";
-  if (filter === "blur") return "blur(3px) brightness(1.03)";
-  return "none";
-}

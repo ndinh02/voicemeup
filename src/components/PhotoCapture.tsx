@@ -1,11 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import { captureSquarePhoto, photoFilterCss, PHOTO_MIME_TYPE, type CameraFacing } from "../lib/camera";
-import { PHOTO_FILTERS, type PhotoFilter } from "../lib/types";
+import { captureSquarePhoto, PHOTO_MIME_TYPE, type CameraFacing } from "../lib/camera";
 
 export interface CapturedPhoto {
   bytes: Uint8Array;
   mimeType: string;
-  filter: PhotoFilter;
 }
 
 interface Props {
@@ -14,8 +12,6 @@ interface Props {
 }
 
 type Phase = "idle" | "requesting" | "live" | "processing";
-
-const FILTER_LABEL: Record<PhotoFilter, string> = { none: "none", bw: "b&w", blur: "blur" };
 
 export default function PhotoCapture({ value, onChange }: Props) {
   const [phase, setPhase] = useState<Phase>("idle");
@@ -93,7 +89,7 @@ export default function PhotoCapture({ value, onChange }: Props) {
       const bytes = await captureSquarePhoto(video, facing);
       stopStream();
       if (!isMountedRef.current) return;
-      onChange({ bytes, mimeType: PHOTO_MIME_TYPE, filter: "none" });
+      onChange({ bytes, mimeType: PHOTO_MIME_TYPE });
       setPhase("idle");
     } catch {
       if (isMountedRef.current) {
@@ -106,10 +102,6 @@ export default function PhotoCapture({ value, onChange }: Props) {
   const retake = () => {
     onChange(null);
     setError(null);
-  };
-
-  const setFilter = (filter: PhotoFilter) => {
-    if (value) onChange({ ...value, filter });
   };
 
   if (phase === "live" || phase === "requesting") {
@@ -163,26 +155,11 @@ export default function PhotoCapture({ value, onChange }: Props) {
     return (
       <div className="flex w-full flex-col items-center gap-3">
         <div className="aspect-square w-full max-w-[200px] overflow-hidden rounded-xl border-2 border-ink">
-          <img src={photoUrl} alt="Your photo" className="h-full w-full object-cover" style={{ filter: photoFilterCss(value.filter) }} />
+          <img src={photoUrl} alt="Your photo" className="h-full w-full object-cover" />
         </div>
-        <div className="flex items-center gap-2">
-          {PHOTO_FILTERS.map((f) => (
-            <button
-              key={f}
-              type="button"
-              onClick={() => setFilter(f)}
-              aria-pressed={value.filter === f}
-              className={`rounded-full border-2 border-ink px-3 py-1 font-mono text-xs ${
-                value.filter === f ? "bg-ink text-paper" : "bg-transparent"
-              }`}
-            >
-              {FILTER_LABEL[f]}
-            </button>
-          ))}
-          <button type="button" onClick={retake} aria-label="Retake photo" className="ml-1 font-mono text-xs underline decoration-dotted underline-offset-4">
-            retake
-          </button>
-        </div>
+        <button type="button" onClick={retake} aria-label="Retake photo" className="font-mono text-xs underline decoration-dotted underline-offset-4">
+          retake
+        </button>
       </div>
     );
   }

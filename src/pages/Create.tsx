@@ -38,10 +38,7 @@ function draftItemsFrom(draft: Draft): ItemDraft[] {
       draft.audioBuffers[i] && item.audioType
         ? { bytes: draft.audioBuffers[i]!, mimeType: item.audioType, duration: item.duration, peaks: item.peaks }
         : null,
-    photo:
-      draft.photoBuffers[i] && item.photoType
-        ? { bytes: draft.photoBuffers[i]!, mimeType: item.photoType, filter: item.photoFilter }
-        : null,
+    photo: draft.photoBuffers[i] && item.photoType ? { bytes: draft.photoBuffers[i]!, mimeType: item.photoType } : null,
   }));
 }
 
@@ -87,7 +84,6 @@ export default function Create() {
       duration: it.audio?.duration ?? 0,
       peaks: it.audio?.peaks ?? [],
       photoType: it.photo?.mimeType ?? "",
-      photoFilter: it.photo?.filter ?? "none",
     }));
     const audioBuffers = finalDrafts.map((it) => it.audio?.bytes ?? null);
     const photoBuffers = finalDrafts.map((it) => it.photo?.bytes ?? null);
@@ -105,12 +101,11 @@ export default function Create() {
     duration: it.audio?.duration ?? 0,
     peaks: it.audio?.peaks ?? [],
     photoType: it.photo?.mimeType ?? "",
-    photoFilter: it.photo?.filter ?? "none",
   }));
   const previewAudio = items.map((it) =>
     it.audio ? { bytes: new Uint8Array(0), mimeType: "", duration: it.audio.duration, peaks: it.audio.peaks } : null,
   );
-  const previewPhoto = items.map((it) => (it.photo ? { bytes: it.photo.bytes, mimeType: it.photo.mimeType, filter: it.photo.filter } : null));
+  const previewPhoto = items.map((it) => (it.photo ? { bytes: it.photo.bytes, mimeType: it.photo.mimeType } : null));
 
   return (
     <div className="mx-auto flex min-h-screen max-w-app flex-col">

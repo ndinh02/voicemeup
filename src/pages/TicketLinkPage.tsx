@@ -48,7 +48,7 @@ export default function TicketLinkPage({ mode }: Props) {
   });
   const photoList = bundle.items.map((item, i) => {
     const bytes = photoBuffers[i];
-    return bytes && item.photoType ? { bytes, mimeType: item.photoType, filter: item.photoFilter } : null;
+    return bytes && item.photoType ? { bytes, mimeType: item.photoType } : null;
   });
   const displayName = bundle.name || "your name";
 
