@@ -13,6 +13,16 @@ export function FlowerCorner({ className }: { className?: string }) {
   );
 }
 
+/** A small binder-clip shape, meant to overlap the top edge of a pinned-on photo. */
+export function ClipIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 40 26" className={className} aria-hidden="true">
+      <rect x="4" y="0" width="32" height="14" rx="7" fill="currentColor" />
+      <rect x="15" y="8" width="10" height="18" rx="4" fill="none" stroke="currentColor" strokeWidth="3" />
+    </svg>
+  );
+}
+
 export function AsteriskIcon({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 40 40" className={className} aria-hidden="true">

@@ -3,16 +3,17 @@
 A mobile-first web app for designing a ticket-shaped, voice-note-carrying
 message and sending it as a link.
 
-No login, no accounts. Every ticket (drawing, voice note, sender name,
-color) is compressed and packed into a single blob; that blob is either
-embedded directly in the URL's hash fragment, or uploaded and swapped for a
-short id, depending on which link gets sent (see below).
+No login, no accounts. Every ticket (drawing, voice note, photo, sender
+name, color) is compressed and packed into a single blob; that blob is
+either embedded directly in the URL's hash fragment, or uploaded and
+swapped for a short id, depending on which link gets sent (see below).
 
 ## How it works
 
 - `/` — landing page
 - `/create` — design a ticket: pick a color, doodle, record a short voice
-  note, optionally add your name
+  note, take a photo (front/back camera, with a b&w/blur filter), optionally
+  add your name
 - `/share` — after generating a link, the creator's own confirmation/share
   screen. This still works entirely client-side (no network needed) so
   editing/previewing a ticket has no server dependency.

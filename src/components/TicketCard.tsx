@@ -1,5 +1,6 @@
 import DrawingSvg from "./DrawingSvg";
 import TicketAudioStrip, { type TicketAudio } from "./TicketAudioStrip";
+import TicketPhoto, { type TicketPhoto as TicketPhotoData } from "./TicketPhoto";
 import { AsteriskIcon, FlowerCorner } from "./icons";
 import { COLOR_CLASSES, type DrawPath, type TicketColor } from "../lib/types";
 
@@ -9,6 +10,7 @@ interface Props {
   dateStr: string;
   paths: DrawPath[];
   audio: TicketAudio | null;
+  photo: TicketPhotoData | null;
   headlineTop?: string;
   headlineBottom?: string;
   className?: string;
@@ -31,6 +33,7 @@ export default function TicketCard({
   dateStr,
   paths,
   audio,
+  photo,
   headlineTop = "You have",
   headlineBottom = "a new voiceme!",
   className = "",
@@ -40,6 +43,7 @@ export default function TicketCard({
   return (
     <div className={`relative w-full overflow-hidden rounded-[9cqw] @container ${bg} ${ink} ${className}`}>
       <FlowerCorner className="absolute left-0 top-0 h-[32cqw] w-[32cqw]" />
+      <TicketPhoto photo={photo} />
 
       <div className="relative px-[5.5cqw] pt-[5.5cqw]">
         <div className="text-right">

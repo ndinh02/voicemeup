@@ -41,10 +41,14 @@ export default function TicketLinkPage({ mode }: Props) {
 
   if (!data) return null;
 
-  const { bundle, audioBuffers } = data;
+  const { bundle, audioBuffers, photoBuffers } = data;
   const audioList = bundle.items.map((item, i) => {
     const bytes = audioBuffers[i];
     return bytes && item.audioType ? { bytes, mimeType: item.audioType, duration: item.duration, peaks: item.peaks } : null;
+  });
+  const photoList = bundle.items.map((item, i) => {
+    const bytes = photoBuffers[i];
+    return bytes && item.photoType ? { bytes, mimeType: item.photoType, filter: item.photoFilter } : null;
   });
   const displayName = bundle.name || "your name";
 
@@ -95,7 +99,7 @@ export default function TicketLinkPage({ mode }: Props) {
   };
 
   const handleBack = () => {
-    navigate("/create", { state: { bundle, audioBuffers } });
+    navigate("/create", { state: { bundle, audioBuffers, photoBuffers } });
   };
 
   const handleCreateNew = () => navigate("/create");
@@ -134,6 +138,7 @@ export default function TicketLinkPage({ mode }: Props) {
           <TicketStack
             items={bundle.items}
             audioList={audioList}
+            photoList={photoList}
             dateStr={bundle.date}
             activeIndex={activeIndex}
             onIndexChange={setActiveIndex}

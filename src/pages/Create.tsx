@@ -5,12 +5,14 @@ import PrimaryButton from "../components/PrimaryButton";
 import TicketStack from "../components/TicketStack";
 import DrawingCanvas from "../components/DrawingCanvas";
 import AudioRecorder, { type RecordedAudio } from "../components/AudioRecorder";
+import PhotoCapture, { type CapturedPhoto } from "../components/PhotoCapture";
 import { encodeTicket, randomTicketId } from "../lib/ticketCodec";
 import { COLOR_HEX, TICKET_COLORS, type DrawPath, type TicketBundle, type TicketColor, type TicketItem } from "../lib/types";
 
 interface Draft {
   bundle: TicketBundle;
   audioBuffers: (Uint8Array | null)[];
+  photoBuffers: (Uint8Array | null)[];
 }
 
 interface ItemDraft {
@@ -18,12 +20,13 @@ interface ItemDraft {
   color: TicketColor;
   paths: DrawPath[];
   audio: RecordedAudio | null;
+  photo: CapturedPhoto | null;
 }
 
 const MAX_ITEMS = 6;
 
 function blankItem(): ItemDraft {
-  return { id: randomTicketId(), color: "pink", paths: [], audio: null };
+  return { id: randomTicketId(), color: "pink", paths: [], audio: null, photo: null };
 }
 
 function draftItemsFrom(draft: Draft): ItemDraft[] {
@@ -34,6 +37,10 @@ function draftItemsFrom(draft: Draft): ItemDraft[] {
     audio:
       draft.audioBuffers[i] && item.audioType
         ? { bytes: draft.audioBuffers[i]!, mimeType: item.audioType, duration: item.duration, peaks: item.peaks }
+        : null,
+    photo:
+      draft.photoBuffers[i] && item.photoType
+        ? { bytes: draft.photoBuffers[i]!, mimeType: item.photoType, filter: item.photoFilter }
         : null,
   }));
 }
@@ -65,7 +72,7 @@ export default function Create() {
     setActiveIndex((i) => Math.max(0, i - (i === items.length - 1 ? 1 : 0)));
   };
 
-  const hasContent = (it: ItemDraft) => it.paths.length > 0 || it.audio !== null;
+  const hasContent = (it: ItemDraft) => it.paths.length > 0 || it.audio !== null || it.photo !== null;
   const canSubmit = items.some(hasContent);
 
   const handleSubmit = () => {
@@ -79,11 +86,14 @@ export default function Create() {
       audioType: it.audio?.mimeType ?? "",
       duration: it.audio?.duration ?? 0,
       peaks: it.audio?.peaks ?? [],
+      photoType: it.photo?.mimeType ?? "",
+      photoFilter: it.photo?.filter ?? "none",
     }));
     const audioBuffers = finalDrafts.map((it) => it.audio?.bytes ?? null);
+    const photoBuffers = finalDrafts.map((it) => it.photo?.bytes ?? null);
 
-    const bundle: TicketBundle = { v: 2, name: name.trim(), date: formatDate(new Date()), items: ticketItems };
-    const encoded = encodeTicket(bundle, audioBuffers);
+    const bundle: TicketBundle = { v: 3, name: name.trim(), date: formatDate(new Date()), items: ticketItems };
+    const encoded = encodeTicket(bundle, audioBuffers, photoBuffers);
     navigate(`/share#${encoded}`);
   };
 
@@ -94,10 +104,13 @@ export default function Create() {
     audioType: it.audio?.mimeType ?? "",
     duration: it.audio?.duration ?? 0,
     peaks: it.audio?.peaks ?? [],
+    photoType: it.photo?.mimeType ?? "",
+    photoFilter: it.photo?.filter ?? "none",
   }));
   const previewAudio = items.map((it) =>
     it.audio ? { bytes: new Uint8Array(0), mimeType: "", duration: it.audio.duration, peaks: it.audio.peaks } : null,
   );
+  const previewPhoto = items.map((it) => (it.photo ? { bytes: it.photo.bytes, mimeType: it.photo.mimeType, filter: it.photo.filter } : null));
 
   return (
     <div className="mx-auto flex min-h-screen max-w-app flex-col">
@@ -113,6 +126,7 @@ export default function Create() {
           <TicketStack
             items={previewItems}
             audioList={previewAudio}
+            photoList={previewPhoto}
             dateStr={dateStr}
             headlineTop="You have"
             headlineBottom="a new message!"
@@ -196,6 +210,13 @@ export default function Create() {
         </section>
 
         <section className="mt-7">
+          <p className="font-sans text-sm">add a photo (optional):</p>
+          <div className="mt-2">
+            <PhotoCapture key={active.id} value={active.photo} onChange={(photo) => updateActive({ photo })} />
+          </div>
+        </section>
+
+        <section className="mt-7">
           <label htmlFor="sender-name" className="font-sans text-sm">
             your name (optional):
           </label>
@@ -211,7 +232,7 @@ export default function Create() {
 
         {!canSubmit && (
           <p className="mt-6 text-center font-mono text-xs text-ink/50">
-            draw something or record a voice note to continue
+            draw something, record a voice note, or add a photo to continue
           </p>
         )}
 

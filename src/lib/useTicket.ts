@@ -6,6 +6,7 @@ import type { TicketBundle } from "./types";
 interface Decoded {
   bundle: TicketBundle;
   audioBuffers: (Uint8Array | null)[];
+  photoBuffers: (Uint8Array | null)[];
 }
 
 /**

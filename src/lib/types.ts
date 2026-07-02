@@ -1,5 +1,9 @@
 export type TicketColor = "pink" | "green" | "blue" | "yellow";
 
+export type PhotoFilter = "none" | "bw" | "blur";
+
+export const PHOTO_FILTERS: PhotoFilter[] = ["none", "bw", "blur"];
+
 export interface DrawPath {
   /** hex color of the stroke */
   color: string;
@@ -18,11 +22,13 @@ export interface TicketItem {
   duration: number;
   /** normalized 0-100 amplitude bars, precomputed so playback pages never need to decode audio just to draw a waveform */
   peaks: number[];
+  photoType: string;
+  photoFilter: PhotoFilter;
 }
 
-/** Everything about a voiceme link except the raw audio bytes (kept separate to avoid base64-in-base64 waste). */
+/** Everything about a voiceme link except the raw audio/photo bytes (kept separate to avoid base64-in-base64 waste). */
 export interface TicketBundle {
-  v: 2;
+  v: 3;
   name: string;
   date: string;
   items: TicketItem[];

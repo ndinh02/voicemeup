@@ -24,6 +24,7 @@ export default function Landing() {
             dateStr={formatDate(new Date())}
             paths={sampleDoodlePaths()}
             audio={{ bytes: new Uint8Array(0), mimeType: "", duration: 15, peaks: samplePeaks() }}
+            photo={null}
           />
         </div>
 

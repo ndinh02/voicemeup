@@ -2,11 +2,13 @@ import { useRef } from "react";
 import { AnimatePresence, motion, type Variants } from "framer-motion";
 import TicketCard from "./TicketCard";
 import type { TicketAudio } from "./TicketAudioStrip";
+import type { TicketPhoto } from "./TicketPhoto";
 import type { TicketItem } from "../lib/types";
 
 interface Props {
   items: TicketItem[];
   audioList: (TicketAudio | null)[];
+  photoList: (TicketPhoto | null)[];
   dateStr: string;
   headlineTop?: string;
   headlineBottom?: string;
@@ -43,6 +45,7 @@ const SPRING = { type: "spring" as const, stiffness: 300, damping: 28, mass: 0.9
 export default function TicketStack({
   items,
   audioList,
+  photoList,
   dateStr,
   headlineTop,
   headlineBottom,
@@ -72,6 +75,7 @@ export default function TicketStack({
             dateStr={dateStr}
             paths={[]}
             audio={audioList[activeIndex]}
+            photo={photoList[activeIndex]}
             headlineTop={headlineTop}
             headlineBottom={headlineBottom}
           />
@@ -102,6 +106,7 @@ export default function TicketStack({
                 dateStr={dateStr}
                 paths={item.paths}
                 audio={audioList[i]}
+                photo={photoList[i]}
                 headlineTop={headlineTop}
                 headlineBottom={headlineBottom}
               />
@@ -134,6 +139,7 @@ export default function TicketStack({
               dateStr={dateStr}
               paths={active.paths}
               audio={audioList[activeIndex]}
+              photo={photoList[activeIndex]}
               headlineTop={headlineTop}
               headlineBottom={headlineBottom}
             />
